@@ -755,6 +755,13 @@
     com: ['be_nl','be_fr']
   };
 
+  const CAMPAIGN_CONFLICT_MAP = {
+    nl:  ['fr_fr','de_de','be_fr','be_nl'],
+    de:  ['fr_fr','nl_nl','be_fr','be_nl'],
+    fr:  ['nl_nl','de_de','be_nl','be_fr'],
+    com: ['nl_nl','de_de','fr_fr']
+  };
+
   let urlHistory = [];
   let hiddenUtmString = '';
 
@@ -826,6 +833,18 @@
       document.getElementById('warningText').textContent =
         `utm_term doesn't seem to match the selected domain (${domainMap[country]}). Double-check before generating.`;
       warning.classList.add('visible');
+      return;
+    }
+
+    // Change 2: check raw utm_campaign for conflicting country code tokens
+    const campaignRaw = document.getElementById('campaign').value.toLowerCase();
+    const conflictCodes = CAMPAIGN_CONFLICT_MAP[country];
+    const campaignConflict = conflictCodes.some(code => hasToken(campaignRaw, code));
+    if (campaignConflict) {
+      const domainMap = { nl:'justrussel.nl', de:'justrussel.de', fr:'justrussel.fr', com:'justrussel.com' };
+      document.getElementById('warningText').textContent =
+        `utm_campaign contains a country code that conflicts with the selected domain (${domainMap[country]}). Double-check before generating.`;
+      warning.classList.add('visible');
     } else {
       warning.classList.remove('visible');
     }
@@ -879,6 +898,15 @@
     const allowedCodes = DOMAIN_COUNTRY_MAP[country];
     const termMatches = allowedCodes.some(code => hasToken(adset.toLowerCase(), code));
     if (!termMatches) {
+      document.getElementById('outputBlock').classList.remove('visible');
+      clearTimeout(historyDebounce);
+      return;
+    }
+
+    // Change 3 (campaign): block generation if raw utm_campaign contains a conflicting country code
+    const conflictCodes = CAMPAIGN_CONFLICT_MAP[country];
+    const campaignConflicts = conflictCodes.some(code => hasToken(campaignRaw.toLowerCase(), code));
+    if (campaignConflicts) {
       document.getElementById('outputBlock').classList.remove('visible');
       clearTimeout(historyDebounce);
       return;
