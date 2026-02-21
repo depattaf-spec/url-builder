@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Just Russel · URL Builder</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@400,0&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --primary:      #ff4628;
+    --dark:         #1e1e1e;
+    --off-white:    #fffff0;
+    --history-bg:   #f9f9f7;
+    --light-orange: #ffe6cd;
+    --light-blue:   #a5e1ff;
+    --light-green:  #a0e6aa;
+    --light-yellow: #ffd76e;
+    --medium-grey:  #6b7280;
+    --border:       rgba(0,0,0,0.08);
+    --serif:        'DM Serif Display', serif;
+    --sans:         'Plus Jakarta Sans', sans-serif;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--off-white);
+    color: var(--dark);
+    font-family: var(--sans);
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: var(--primary);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    box-shadow: 0 4px 24px rgba(255,70,40,0.25);
+  }
+
+  .header-inner {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 24px;
+    height: 72px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .header-brand {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .header-brand .wordmark {
+    font-family: var(--serif);
+    font-size: 1.75rem;
+    color: #fff;
+    line-height: 1;
+  }
+
+  .header-divider {
+    width: 1px;
+    height: 24px;
+    background: rgba(255,255,255,0.3);
+  }
+
+  .header-sub {
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.75);
+  }
+
+  /* ── MAIN ── */
+  main {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 56px 24px 100px;
+  }
+
+  .page-intro {
+    margin-bottom: 52px;
+  }
+
+  .page-intro h1 {
+    font-family: var(--serif);
+    font-size: clamp(2.6rem, 5vw, 4rem);
+    color: var(--dark);
+    line-height: 1.1;
+    margin-bottom: 14px;
+  }
+
+  .page-intro p {
+    font-size: 1rem;
+    font-weight: 500;
+    color: rgba(30,30,30,0.5);
+    max-width: 500px;
+    line-height: 1.6;
+  }
+
+  /* ── SECTION HEADER ── */
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 24px;
+    margin-top: 48px;
+  }
+
+  .section-header h2 {
+    font-family: var(--serif);
+    font-size: 1.4rem;
+    color: var(--dark);
+    white-space: nowrap;
+  }
+
+  .section-rule {
+    flex: 1;
+    height: 6px;
+    background: var(--light-orange);
+    border-radius: 99px;
+  }
+
+  /* ── FORM ── */
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+
+  .form-grid.full { grid-template-columns: 1fr; }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  label {
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: rgba(30,30,30,0.5);
+    padding-left: 4px;
+  }
+
+  label .optional {
+    font-weight: 500;
+    font-size: 0.6rem;
+    text-transform: none;
+    letter-spacing: 0;
+    color: rgba(30,30,30,0.35);
+    margin-left: 4px;
+  }
+
+  input, select {
+    width: 100%;
+    background: var(--light-orange);
+    border: 2px solid transparent;
+    border-radius: 16px;
+    color: var(--dark);
+    font-family: var(--sans);
+    font-size: 0.88rem;
+    font-weight: 500;
+    padding: 14px 18px;
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+
+  input::placeholder { color: rgba(30,30,30,0.35); }
+
+  input:focus, select:focus {
+    border-color: var(--dark);
+    box-shadow: 0 0 0 4px rgba(30,30,30,0.06);
+  }
+
+  input.field-error {
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 0 4px rgba(255,70,40,0.1) !important;
+  }
+
+  select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%231e1e1e' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 16px center;
+    padding-right: 40px;
+    cursor: pointer;
+  }
+
+  select option { background: #fff; }
+
+  /* Strip notice */
+  .strip-notice {
+    display: none;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--medium-grey);
+    padding: 7px 14px;
+    background: #fff;
+    border-radius: 10px;
+    border-left: 3px solid var(--primary);
+    margin-top: 2px;
+  }
+
+  .strip-notice.visible { display: block; }
+  .strip-notice span { color: var(--primary); }
+
+  /* Special char notice */
+  .special-char-notice {
+    display: none;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--medium-grey);
+    padding: 7px 14px;
+    background: #fff;
+    border-radius: 10px;
+    border-left: 3px solid var(--light-yellow);
+    margin-top: 2px;
+  }
+
+  .special-char-notice.visible { display: block; }
+  .special-char-notice span { color: #b8860b; }
+
+  /* Warning */
+  .warning {
+    display: none;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255,215,110,0.25);
+    border: 1.5px solid var(--light-yellow);
+    border-radius: 14px;
+    padding: 12px 18px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #7a6200;
+    margin-bottom: 16px;
+    line-height: 1.5;
+  }
+
+  .warning.visible { display: flex; }
+  .warning-icon { flex-shrink: 0; }
+
+  /* ── OUTPUT ── */
+  .output-block {
+    display: none;
+    flex-direction: column;
+    gap: 14px;
+    animation: fadeUp 0.25s ease;
+  }
+
+  .output-block.visible { display: flex; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Final URL card */
+  .card-url {
+    background: var(--light-green);
+    border: 1.5px solid var(--border);
+    border-radius: 24px;
+    padding: 28px;
+  }
+
+  .card-url-inner {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+  }
+
+  .card-url-left { flex: 1; min-width: 0; }
+
+  .card-eyebrow {
+    font-size: 0.6rem;
+    font-weight: 800;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(30,30,30,0.4);
+    display: block;
+    margin-bottom: 10px;
+  }
+
+  #finalUrl {
+    font-family: var(--sans);
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--dark);
+    word-break: break-all;
+    line-height: 1.65;
+  }
+
+  /* UTM card */
+  .card-utm {
+    background: var(--light-blue);
+    border: 1.5px solid var(--border);
+    border-radius: 24px;
+    padding: 28px;
+  }
+
+  .card-utm-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 18px;
+  }
+
+  .utm-breakdown {
+    display: flex;
+    flex-direction: column;
+    background: rgba(255,255,255,0.5);
+    border-radius: 14px;
+    overflow: hidden;
+  }
+
+  .utm-param {
+    display: flex;
+    align-items: stretch;
+    border-bottom: 1px solid rgba(0,0,0,0.06);
+    font-size: 0.82rem;
+  }
+
+  .utm-param:last-child { border-bottom: none; }
+
+  .utm-param-key {
+    padding: 11px 16px;
+    color: rgba(30,30,30,0.45);
+    font-weight: 700;
+    min-width: 160px;
+    flex-shrink: 0;
+    border-right: 1px solid rgba(0,0,0,0.06);
+  }
+
+  .utm-param-val {
+    padding: 11px 16px;
+    color: var(--dark);
+    font-weight: 600;
+    word-break: break-all;
+  }
+
+  /* Pill button */
+  .pill-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 20px;
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    border-radius: 99px;
+    font-family: var(--sans);
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: opacity 0.15s, transform 0.1s, background 0.15s;
+    white-space: nowrap;
+    flex-shrink: 0;
+    box-shadow: 0 2px 12px rgba(255,70,40,0.3);
+  }
+
+  .pill-btn:hover { opacity: 0.88; }
+  .pill-btn:active { transform: scale(0.97); }
+  .pill-btn.copied { background: #2a9d5c; box-shadow: 0 2px 12px rgba(42,157,92,0.3); }
+  .pill-btn.failed { background: #999; box-shadow: none; }
+  .pill-btn .mat-icon { font-family: 'Material Symbols Outlined'; font-size: 14px; line-height: 1; }
+
+  /* Outline pill */
+  .pill-btn-outline {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    background: transparent;
+    color: var(--dark);
+    border: 1.5px solid rgba(30,30,30,0.2);
+    border-radius: 99px;
+    font-family: var(--sans);
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s, color 0.15s;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .pill-btn-outline:hover { border-color: var(--dark); background: rgba(30,30,30,0.04); }
+  .pill-btn-outline.copied { background: var(--light-green); border-color: #2a9d5c; color: #2a9d5c; }
+  .pill-btn-outline .mat-icon { font-family: 'Material Symbols Outlined'; font-size: 13px; line-height: 1; }
+
+  /* ── HISTORY ── */
+  .history-block { margin-top: 64px; }
+
+  .history-top {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+
+  .history-top .section-header {
+    flex: 1;
+    margin: 0;
+  }
+
+  .btn-clear {
+    flex-shrink: 0;
+    font-family: var(--sans);
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(30,30,30,0.4);
+    background: none;
+    border: 1.5px solid rgba(30,30,30,0.15);
+    border-radius: 99px;
+    padding: 6px 14px;
+    cursor: pointer;
+    transition: color 0.15s, border-color 0.15s;
+  }
+
+  .btn-clear:hover { color: var(--primary); border-color: var(--primary); }
+
+  .history-empty {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: rgba(30,30,30,0.3);
+    text-align: center;
+    padding: 32px;
+    background: var(--history-bg);
+    border-radius: 20px;
+    border: 1.5px dashed rgba(30,30,30,0.1);
+  }
+
+  .history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .history-item {
+    background: var(--history-bg);
+    border: 1.5px solid rgba(0,0,0,0.06);
+    border-radius: 18px;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    transition: border-color 0.15s;
+    animation: fadeUp 0.2s ease;
+  }
+
+  .history-item:hover { border-color: rgba(0,0,0,0.14); }
+
+  .history-meta {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 36px;
+  }
+
+  .history-num {
+    font-family: var(--serif);
+    font-size: 1.4rem;
+    color: rgba(30,30,30,0.1);
+    line-height: 1;
+  }
+
+  .history-time {
+    font-size: 0.58rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(30,30,30,0.3);
+  }
+
+  .history-url {
+    flex: 1;
+    font-size: 0.76rem;
+    font-weight: 500;
+    color: var(--medium-grey);
+    word-break: break-all;
+    line-height: 1.55;
+  }
+
+  .history-copy-btn {
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--primary);
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(255,70,40,0.25);
+    transition: transform 0.15s, opacity 0.15s, background 0.15s;
+  }
+
+  .history-copy-btn:hover { transform: scale(1.08); }
+  .history-copy-btn:active { transform: scale(0.95); }
+  .history-copy-btn.copied { background: #2a9d5c; }
+  .history-copy-btn .mat-icon { font-family: 'Material Symbols Outlined'; font-size: 15px; line-height: 1; }
+
+  /* ── FOOTER ── */
+  footer {
+    margin-top: 80px;
+    padding: 36px 24px;
+    border-top: 1.5px solid var(--light-orange);
+    background: #fff;
+  }
+
+  .footer-inner {
+    max-width: 960px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .footer-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .footer-brand .mat-icon {
+    font-family: 'Material Symbols Outlined';
+    font-size: 26px;
+    color: var(--primary);
+  }
+
+  .footer-brand span.name {
+    font-family: var(--serif);
+    font-size: 1.5rem;
+    color: var(--dark);
+  }
+
+  .footer-copy {
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: rgba(30,30,30,0.25);
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 600px) {
+    .form-grid { grid-template-columns: 1fr; }
+    .card-url-inner { flex-direction: column; }
+    .card-utm-header { flex-wrap: wrap; gap: 10px; }
+    .utm-param-key { min-width: 110px; }
+    .header-divider, .header-sub { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="header-brand">
+      <span class="wordmark">Just Russel</span>
+      <div class="header-divider"></div>
+      <span class="header-sub">Meta Ads URL Builder</span>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <div class="page-intro">
+    <h1>Campaign Builder</h1>
+    <p>Create properly formatted tracking links for your Meta Ads campaigns in seconds.</p>
+  </div>
+
+  <!-- SECTION: Campaign Details -->
+  <div class="section-header">
+    <h2>Campaign Details</h2>
+    <div class="section-rule"></div>
+  </div>
+
+  <div class="form-grid">
+    <div class="field">
+      <label>Country / Domain</label>
+      <select id="country" onchange="generate(); checkWarning()">
+        <option value="nl">🇳🇱 justrussel.nl</option>
+        <option value="de">🇩🇪 justrussel.de</option>
+        <option value="fr">🇫🇷 justrussel.fr</option>
+        <option value="com">🌍 justrussel.com</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Path <span class="optional">e.g. /alimentation-chien/</span></label>
+      <input type="text" id="path" placeholder="/your-page-path/" oninput="generate()" />
+    </div>
+  </div>
+
+  <div class="form-grid full">
+    <div class="field">
+      <label>utm_campaign <span class="optional">country codes will be auto-stripped</span></label>
+      <input type="text" id="campaign" placeholder="e.g. alwayson-asc_mofbof_conversion" oninput="onCampaignInput(); generate()" />
+      <div class="strip-notice" id="stripNotice">Stripped: <span id="strippedTokens"></span></div>
+    </div>
+  </div>
+
+  <div class="form-grid full">
+    <div class="field">
+      <label>utm_term <span class="optional">ad set name — country codes stay</span></label>
+      <input type="text" id="adset" placeholder="e.g. be_fr_region_belgium" oninput="checkWarning(); generate()" />
+    </div>
+  </div>
+
+  <div class="form-grid full">
+    <div class="field">
+      <label>utm_content <span class="optional">ad creative name</span></label>
+      <input type="text" id="adcontent" placeholder="e.g. jr-brandstaticfr-newtemplates-a23-p2-checkoutred-none_image_dog" oninput="generate()" />
+      <div class="special-char-notice" id="adcontentSpecialNotice"><span>⚠ Special character detected</span> — this may corrupt the final URL.</div>
+    </div>
+  </div>
+
+  <!-- Country mismatch warning -->
+  <div class="warning" id="countryWarning">
+    <span class="warning-icon">⚠</span>
+    <span id="warningText">Country code in utm_term doesn't match the selected domain. Double-check before generating.</span>
+  </div>
+
+  <!-- OUTPUT -->
+  <div class="output-block" id="outputBlock">
+
+    <div class="section-header" style="margin-top: 12px;">
+      <h2>Generated URL</h2>
+      <div class="section-rule" style="background: var(--light-green);"></div>
+    </div>
+
+    <div class="card-url">
+      <div class="card-url-inner">
+        <div class="card-url-left">
+          <span class="card-eyebrow">Final URL</span>
+          <div id="finalUrl"></div>
+        </div>
+        <button class="pill-btn" onclick="copyValue('finalUrl', this)">
+          <span class="mat-icon">content_copy</span>
+          Copy URL
+        </button>
+      </div>
+    </div>
+
+    <div class="card-utm">
+      <div class="card-utm-header">
+        <span class="card-eyebrow" style="margin-bottom:0;">UTM Parameters</span>
+        <button class="pill-btn-outline" onclick="copyValue('utmString', this)">
+          <span class="mat-icon">content_copy</span>
+          Copy Params
+        </button>
+      </div>
+      <div class="utm-breakdown" id="utmBreakdown"></div>
+    </div>
+
+  </div>
+
+  <!-- HISTORY -->
+  <div class="history-block" id="historyBlock">
+    <div class="history-top">
+      <div class="section-header" style="margin:0; flex:1;">
+        <h2 style="opacity:0.45;">Recent History</h2>
+        <div class="section-rule" style="opacity:0.45;"></div>
+      </div>
+      <button class="btn-clear" onclick="clearHistory()">Clear all</button>
+    </div>
+    <div class="history-empty" id="historyEmpty">No URLs generated yet.</div>
+    <div class="history-list" id="historyList"></div>
+  </div>
+
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <span class="mat-icon">pets</span>
+      <span class="name">Just Russel</span>
+    </div>
+    <span class="footer-copy">© 2025 Just Russel · All Rights Reserved</span>
+  </div>
+</footer>
+
+<script>
+  const STRIP_PATTERNS = ['_be_fr','_be_nl','_nl_nl','_de_de','_fr_fr'];
+
+  const DOMAIN_COUNTRY_MAP = {
+    nl: ['nl_nl','nl'],
+    de: ['de_de','de'],
+    fr: ['be_fr','fr_fr','fr'],
+    com: []
+  };
+
+  let urlHistory = [];
+  let hiddenUtmString = '';
+
+  function stripCampaign(raw) {
+    let stripped = raw;
+    let found = [];
+    STRIP_PATTERNS.forEach(p => {
+      // Fix 1: fresh RegExp instances for .test() and .replace() separately
+      // so the stateful lastIndex on the gi flag never causes a silent miss.
+      const reTest    = new RegExp(p, 'gi');
+      const reReplace = new RegExp(p, 'gi');
+      if (reTest.test(stripped)) {
+        found.push(p);
+        stripped = stripped.replace(reReplace, '');
+      }
+    });
+    stripped = stripped.replace(/[_-]{2,}/g, m => m[0]).replace(/[_-]$/,'').replace(/^[_-]/,'');
+    return { cleaned: stripped.trim(), found };
+  }
+
+  function onCampaignInput() {
+    const raw = document.getElementById('campaign').value;
+    const { cleaned, found } = stripCampaign(raw);
+    const notice = document.getElementById('stripNotice');
+    const tokens = document.getElementById('strippedTokens');
+    if (found.length > 0 && cleaned !== raw) {
+      tokens.textContent = found.join(', ') + ' → "' + cleaned + '"';
+      notice.classList.add('visible');
+    } else {
+      notice.classList.remove('visible');
+    }
+    checkWarning();
+  }
+
+  function checkSpecialChars(inputId, noticeId) {
+    const SPECIAL_CHARS = /[&=?#%+]/;
+    const val = document.getElementById(inputId).value;
+    const notice = document.getElementById(noticeId);
+    if (SPECIAL_CHARS.test(val)) {
+      notice.classList.add('visible');
+    } else {
+      notice.classList.remove('visible');
+    }
+  }
+
+  function checkWarning() {
+    const country = document.getElementById('country').value;
+    const adset = document.getElementById('adset').value.toLowerCase();
+    const warning = document.getElementById('countryWarning');
+
+    if (country === 'com' || !adset) {
+      warning.classList.remove('visible');
+      return;
+    }
+
+    const allowedCodes = DOMAIN_COUNTRY_MAP[country];
+    const hasMatch = allowedCodes.some(code => adset.includes(code));
+
+    if (!hasMatch && adset.length > 0) {
+      const domainMap = { nl:'justrussel.nl', de:'justrussel.de', fr:'justrussel.fr' };
+      document.getElementById('warningText').textContent =
+        `utm_term doesn't seem to match the selected domain (${domainMap[country]}). Double-check before generating.`;
+      warning.classList.add('visible');
+    } else {
+      warning.classList.remove('visible');
+    }
+  }
+
+  function sanitize(str) {
+    return str.trim().toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9\-_]/g, '');
+  }
+
+  let historyDebounce = null;
+  let lastHistoryUrl = '';
+
+  function generate() {
+    const country = document.getElementById('country').value;
+    const pathRaw = document.getElementById('path').value.trim();
+    const campaignRaw = document.getElementById('campaign').value.trim();
+    const adset = document.getElementById('adset').value.trim();
+    const adcontent = document.getElementById('adcontent').value.trim();
+
+    const domainMap = { nl:'https://justrussel.nl', de:'https://justrussel.de', fr:'https://justrussel.fr', com:'https://justrussel.com' };
+    const base = domainMap[country];
+
+    let path = pathRaw;
+    // Fix 4: strip any query string or fragment from the path before appending UTMs
+    path = path.split('?')[0].split('#')[0];
+    if (path && !path.startsWith('/')) path = '/' + path;
+    if (path && !path.endsWith('/')) path = path + '/';
+
+    const { cleaned: campaign } = stripCampaign(campaignRaw);
+
+    // All three must be filled — highlight missing
+    // Fix 3: a campaign that strips down to empty is treated as missing
+    const missing = [
+      !campaign  && 'campaign',
+      !adset     && 'adset',
+      !adcontent && 'adcontent',
+    ].filter(Boolean);
+
+    ['campaign','adset','adcontent'].forEach(id => {
+      document.getElementById(id).classList.remove('field-error');
+    });
+
+    if (missing.length > 0) {
+      missing.forEach(id => document.getElementById(id).classList.add('field-error'));
+      document.getElementById('outputBlock').classList.remove('visible');
+      clearTimeout(historyDebounce);
+      return;
+    }
+
+    const params = [
+      ['utm_source',   'facebook-instagram'],
+      ['utm_medium',   'socialpaid'],
+      ['utm_campaign', sanitize(campaign)],
+      // Fix 2: encodeURIComponent on utm_term and utm_content so special
+      // characters are safely encoded rather than corrupting the URL silently.
+      ['utm_term',     encodeURIComponent(adset.trim())],
+      ['utm_content',  encodeURIComponent(adcontent.trim())],
+    ];
+
+    const utmString = params.map(([k,v]) => `${k}=${v}`).join('&');
+    const finalUrl = `${base}${path}?${utmString}`;
+
+    document.getElementById('utmString').textContent = utmString;
+    document.getElementById('finalUrl').textContent = finalUrl;
+
+    document.getElementById('utmBreakdown').innerHTML = params.map(([k,v]) => `
+      <div class="utm-param">
+        <div class="utm-param-key">${k}</div>
+        <div class="utm-param-val">${v}</div>
+      </div>
+    `).join('');
+
+    document.getElementById('outputBlock').classList.add('visible');
+
+    clearTimeout(historyDebounce);
+    historyDebounce = setTimeout(() => {
+      if ((campaign || adset || adcontent) && finalUrl !== lastHistoryUrl) {
+        lastHistoryUrl = finalUrl;
+        addHistory(finalUrl);
+      }
+    }, 1200);
+  }
+
+  function addHistory(url) {
+    urlHistory.unshift({ url, time: new Date().toISOString() });
+    if (urlHistory.length > 30) urlHistory = urlHistory.slice(0, 30);
+    // Fix 5: persist to localStorage so history survives page refresh
+    try { localStorage.setItem('jr_url_builder_history', JSON.stringify(urlHistory)); } catch(e) {}
+    renderHistory();
+  }
+
+  function renderHistory() {
+    const list = document.getElementById('historyList');
+    const empty = document.getElementById('historyEmpty');
+    if (urlHistory.length === 0) {
+      empty.style.display = 'block';
+      list.innerHTML = '';
+      return;
+    }
+    empty.style.display = 'none';
+    list.innerHTML = urlHistory.map((item, i) => {
+      // Fix 5: time is stored as ISO string, parse it back for display
+      const t = new Date(item.time);
+      const timeStr = t.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const num = String(urlHistory.length - i).padStart(2, '0');
+      return `
+        <div class="history-item">
+          <div class="history-meta">
+            <div class="history-num">${num}</div>
+            <div class="history-time">${timeStr}</div>
+          </div>
+          <div class="history-url">${item.url}</div>
+          <button class="history-copy-btn" onclick="copyText('${escapeUrl(item.url)}', this)">
+            <span class="mat-icon">content_copy</span>
+          </button>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function escapeUrl(url) {
+    return url.replace(/'/g, "\\'");
+  }
+
+  function clearHistory() {
+    urlHistory = [];
+    try { localStorage.removeItem('jr_url_builder_history'); } catch(e) {}
+    renderHistory();
+  }
+
+  function copyValue(id, btn) {
+    copyText(document.getElementById(id).textContent, btn);
+  }
+
+  function copyText(text, btn) {
+    const plainText = typeof text === 'string' ? text : String(text);
+    const item = new ClipboardItem({
+      'text/plain': new Blob([plainText], { type: 'text/plain' })
+    });
+    navigator.clipboard.write([item]).then(() => {
+      const isCircle = btn.classList.contains('history-copy-btn');
+      btn.classList.add('copied');
+      if (!isCircle) {
+        const isPill = btn.classList.contains('pill-btn');
+        btn.innerHTML = '<span class="mat-icon">check</span> Copied!';
+        setTimeout(() => {
+          btn.classList.remove('copied');
+          btn.innerHTML = isPill
+            ? '<span class="mat-icon">content_copy</span> Copy URL'
+            : '<span class="mat-icon">content_copy</span> Copy Params';
+        }, 1800);
+      } else {
+        setTimeout(() => btn.classList.remove('copied'), 1800);
+      }
+    }).catch(() => {
+      if (!btn.classList.contains('history-copy-btn')) btn.textContent = 'Failed';
+      setTimeout(() => {
+        if (btn.classList.contains('pill-btn')) {
+          btn.innerHTML = '<span class="mat-icon">content_copy</span> Copy URL';
+        }
+      }, 1800);
+    });
+  }
+
+  // Fix 5: restore history from localStorage on page load
+  try {
+    const saved = localStorage.getItem('jr_url_builder_history');
+    if (saved) {
+      urlHistory = JSON.parse(saved);
+      if (!Array.isArray(urlHistory)) urlHistory = [];
+      renderHistory();
+    }
+  } catch(e) { urlHistory = []; }
+
+  const hiddenSpan = document.createElement('span');
+  hiddenSpan.id = 'utmString';
+  hiddenSpan.style.display = 'none';
+  document.body.appendChild(hiddenSpan);
+</script>
+</body>
+</html>
