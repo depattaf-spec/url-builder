@@ -600,6 +600,57 @@
     }
   }
 
+  /* ── PATH SUGGESTION CHIPS ── */
+  .path-suggestions-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 6px;
+  }
+
+  .path-suggestions-intro {
+    font-size: 0.65rem;
+    font-weight: 800;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: rgba(30,30,30,0.4);
+    padding-left: 2px;
+  }
+
+  .path-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .path-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: var(--light-orange);
+    color: var(--dark);
+    font-family: var(--sans);
+    font-size: 0.7rem;
+    font-weight: 600;
+    border: 1.5px solid var(--border);
+    border-radius: 99px;
+    padding: 5px 12px;
+    cursor: pointer;
+    transition: background 0.15s;
+    line-height: 1;
+  }
+
+  .path-chip:hover {
+    background: var(--light-yellow);
+  }
+
+  .path-chip-label {
+    font-size: 0.6rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: rgba(30,30,30,0.45);
+  }
+
 </style>
 </head>
 <body>
@@ -635,7 +686,7 @@
       <div class="form-grid">
         <div class="field">
           <label>Country / Domain</label>
-          <select id="country" onchange="generate(); checkWarning()">
+          <select id="country" onchange="generate(); checkWarning(); renderPathSuggestions()">
             <option value="nl">🇳🇱 justrussel.nl</option>
             <option value="de">🇩🇪 justrussel.de</option>
             <option value="fr">🇫🇷 justrussel.fr</option>
@@ -645,6 +696,7 @@
         <div class="field">
           <label>Path <span class="optional">e.g. /alimentation-chien/</span></label>
           <input type="text" id="path" placeholder="/your-page-path/" oninput="generate()" />
+          <div id="pathSuggestions"></div>
         </div>
       </div>
 
@@ -762,6 +814,17 @@
     com: ['nl_nl','de_de','fr_fr']
   };
 
+  const PATH_SUGGESTIONS = {
+    nl:  ['/kattenvoer/', '/beste-voer-huisdier/'],
+    de:  ['/hundefutter-tk/', '/black-friday-hundefutter/'],
+    fr:  ['/alimentation-pour-chien/', '/alimentation-chien/'],
+    com: [
+      { path: '/hondenvoeding/',                label: 'BENL' },
+      { path: '/kattenvoeding/',                label: 'BENL' },
+      { path: '/fr-be/nourriture-sur-mesure/',  label: 'BEFR' }
+    ]
+  };
+
   let urlHistory = [];
   let hiddenUtmString = '';
 
@@ -857,7 +920,28 @@
   let historyDebounce = null;
   let lastHistoryUrl = '';
 
+  function renderPathSuggestions() {
+    const country = document.getElementById('country').value;
+    const container = document.getElementById('pathSuggestions');
+    const suggestions = PATH_SUGGESTIONS[country];
+    if (!suggestions || suggestions.length === 0) {
+      container.innerHTML = '';
+      return;
+    }
+    const chips = suggestions.map(item => {
+      const isObj = typeof item === 'object';
+      const path  = isObj ? item.path  : item;
+      const label = isObj ? item.label : null;
+      const labelHtml = label
+        ? `<span class="path-chip-label">${label}</span>`
+        : '';
+      return `<button class="path-chip" onclick="document.getElementById('path').value='${path}'; generate();">${labelHtml}${path}</button>`;
+    }).join('');
+    container.innerHTML = `<div class="path-suggestions-wrap"><span class="path-suggestions-intro">Suggested paths</span><div class="path-chips">${chips}</div></div>`;
+  }
+
   function generate() {
+    renderPathSuggestions();
     const country = document.getElementById('country').value;
     const pathRaw = document.getElementById('path').value.trim();
     const campaignRaw = document.getElementById('campaign').value.trim();
@@ -1036,6 +1120,8 @@
       renderHistory();
     }
   } catch(e) { urlHistory = []; }
+
+  renderPathSuggestions();
 
   const hiddenSpan = document.createElement('span');
   hiddenSpan.id = 'utmString';
